@@ -67,6 +67,11 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.Completion.Providers
                     Return items
                 End If
 
+                If token.ValueText = "<(" OrElse (token.ValueText = "(" AndAlso token.GetPreviousToken().ValueText = "<") Then
+                    items.Add(GetItem(IteratorLambdaExpression, True, "("))
+                    Return items
+                End If
+
                 Dim parent = parents(0)
                 Dim trueParent = If(parent.ToString().StartsWith(token.ValueText) OrElse parent.ToString().StartsWith("<" & token.ValueText), parent.Parent, parent)
 

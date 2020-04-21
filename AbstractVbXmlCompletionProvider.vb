@@ -20,7 +20,9 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.Completion.Providers
 
         Protected Const Quote As String = ChrW(34)
         Protected Const LambdaExpression As String = "vbxmlLambda"
+        Protected Const IteratorLambdaExpression As String = NameOf(IteratorLambdaExpression)
         Protected Const VbXmlRootName As String = "vbxml"
+
 
         Protected Const _BeforeCaretText As String = NameOf(_BeforeCaretText)
         Protected Const _AfterCaretText As String = NameOf(_AfterCaretText)
@@ -119,6 +121,14 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.Completion.Providers
                                " />" & vbCrLf & "End Function)()" & vbCrLf,
                                "%>")
                           )
+
+            _s_tagMap.Add(IteratorLambdaExpression,
+              New CompletionParts(
+                   "%= (Iterator Function()" & vbCrLf & "For Each item in Collection" & vbCrLf,
+                   "Yield <p><%= item %>",
+                   "</p>" & vbCrLf & "Next" & vbCrLf & "End Function)()",
+                   "%>")
+              )
         End Sub
 
         Private Shared Function GetXmlComplexElement(tagName As String) As XmlSchemaComplexType
@@ -245,11 +255,11 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.Completion.Providers
 
         Protected MustOverride Function GetItemsWorkerAsync(_document As Document, _position As Integer, _trigger As CompletionTrigger, _cancellationToken As CancellationToken) As Task(Of IEnumerable(Of CompletionItem))
 
-        Protected Function GetItem(name As String, AddCloseTag As Boolean) As CompletionItem
+        Protected Function GetItem(name As String, AddCloseTag As Boolean, Optional delPrevStr As String = "") As CompletionItem
             Dim value As CompletionParts
             If _s_tagMap.TryGetValue(name, value) Then
                 Dim parts = GetAttrAndClosingTag(value, AddCloseTag)
-                Return CreateCompletionItem(name, parts.beforeCaretText, parts.afterCaretText, "")
+                Return CreateCompletionItem(name, parts.beforeCaretText, parts.afterCaretText, delPrevStr)
             Else
                 Return CreateCompletionItem(name)
             End If
@@ -479,7 +489,12 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.Completion.Providers
                 newPosition += 1
             End If
 
-            replacementText += afterCaretText
+            If replacementText.TrimEnd.EndsWith(">") AndAlso afterCaretText.TrimStart.StartsWith(">") Then
+                replacementText += afterCaretText.TrimStart(" "c, ">"c)
+            Else
+                replacementText += afterCaretText
+            End If
+
 
             Return CompletionChange.Create(
                     New TextChange(replacementSpan, replacementText),
