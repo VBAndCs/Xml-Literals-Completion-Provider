@@ -1,6 +1,6 @@
 ﻿# Setup:
-- If you are a VB.NET, you can install this [Html5 auto-completion provider VS.NET extension](https://github.com/VBAndCs/Vazor/blob/master/vbxmlCompletionProviderVSIX.zip?raw=true)
-- If you are a VB.NET contributors, you can add these two files to the in your Roslyn fork, in the folder `Completion/CompletionProviders` in the project `Microsoft.CodeAnalysis.VisualBasic.Features`
+- If you are a VB.NET dev, you can install this [Html5 auto-completion provider VS.NET extension](https://github.com/VBAndCs/Vazor/blob/master/vbxmlCompletionProviderVSIX.zip?raw=true)
+- If you are a VB.NET contributors, you can add these two files to your Roslyn fork, in the folder `Completion/CompletionProviders` in the project `Microsoft.CodeAnalysis.VisualBasic.Features`
 
 Usage:
 This completion provider will provide HTML5 auto completion in VB.NET XML Literals. 
